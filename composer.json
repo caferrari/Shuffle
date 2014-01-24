@@ -1,0 +1,23 @@
+{
+    "name": "caferrari/random",
+    "description": "Shuffle a huge amount of numbers",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Carlos Andre Ferrari",
+            "email": "caferrari@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "Caf\\Shuffle": "src\/"
+        }
+    },
+    "require": {
+        "php": ">=5.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.8.*"
+    }
+}
