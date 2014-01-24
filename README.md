@@ -1,4 +1,4 @@
-Caf\Shuffle
+Caf\Shuffle [![Build Status](https://travis-ci.org/caferrari/Shuffle.png?branch=master)](https://travis-ci.org/caferrari/Shuffle)
 ===========
 
 This lib was made with the objective to shuffle a huge amount of numbers
@@ -8,11 +8,13 @@ Performance
 
 It's a lot slower than the combo range + shuffle functions but it does have a nice memory advantage:
 
-10000000 (10 million) numbers
+10000000 (10 million) numbers:
+
     range + shuffe: 1425.28 MB in 9 seconds
     Caf\Shuffle: 38.59 MB in 51 seconds // Exported file: 40MB
 
-100000000 (100 million) numbers
+100000000 (100 million) numbers:
+
     range + shuffe: PHP Fatal error:  Allowed memory size of 4294967296 bytes exhausted (tried to allocate 32 bytes)
     Caf\Shuffle: 381.79Mb in 518 seconds // Exported file: 400MB
 
