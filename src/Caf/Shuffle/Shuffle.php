@@ -22,12 +22,14 @@ class Shuffle
         }
 
         $this->max = $max;
-        $this->setPackFormat($max);
-        $this->setPackLength($this->getPackFormat());
     }
 
-    private function setPackFormat($number)
+    public function getPackFormat()
     {
+
+        if (!is_null($this->packFormat)) {
+            return $this->packFormat;
+        }
 
         $sizes = array(
             'C' => pow(2, 8),
@@ -37,7 +39,7 @@ class Shuffle
         );
 
         foreach ($sizes as $format => $size) {
-            if ($number < $size) {
+            if ($this->max < $size) {
                 return $this->packFormat = $format;
             }
         }
@@ -46,8 +48,12 @@ class Shuffle
 
     }
 
-    private function setPackLength($packFormat)
+    public function getPackLength()
     {
+
+        if (!is_null($this->packLength)) {
+            return $this->packLength;
+        }
 
         $packs = array(
             'C' => 1,
@@ -56,21 +62,11 @@ class Shuffle
             'd' => 8,
         );
 
-        if (isset($packs[$packFormat])) {
-            return $this->packLength = $packs[$packFormat];
+        if (isset($packs[$this->packFormat])) {
+            return $this->packLength = $packs[$this->packFormat];
         }
 
         throw new OutOfRangeException("Invalid pack format");
-    }
-
-    public function getPackFormat()
-    {
-        return $this->packFormat;
-    }
-
-    public function getPackLength()
-    {
-        return $this->packLength;
     }
 
     private function pack($number)
@@ -101,6 +97,8 @@ class Shuffle
             return;
         }
 
+        $this->getPackFormat();
+
         if (is_null($filePointer)) {
             $filePointer = fopen('php://memory', 'r+');
         }
@@ -123,7 +121,7 @@ class Shuffle
         $this->initialized = true;
     }
 
-    private function isSeekable($filePointer)
+    public function isSeekable($filePointer)
     {
         $parameters = stream_get_meta_data($filePointer);
         return $parameters['seekable'];
@@ -169,6 +167,16 @@ class Shuffle
 
     }
 
+    public function shuffle($entropy = 1)
+    {
+        $this->initialize();
+
+        $turns = $entropy * $this->max;
+        for ($x = 0; $x < $turns; $x++) {
+            $this->randomFlip();
+        }
+    }
+
     public function load($filePointer)
     {
         $this->filePointer = $filePointer;
@@ -180,16 +188,6 @@ class Shuffle
         $this->load(fopen($fileName, 'r+'));
     }
 
-    public function shuffle($entropy = 1)
-    {
-        $this->initialize();
-
-        $turns = $entropy * $this->max;
-        for ($x = 0; $x < $turns; $x++) {
-            $this->randomFlip();
-        }
-    }
-
     public function getIterator()
     {
         $this->initialize();
@@ -198,7 +196,7 @@ class Shuffle
             $this->initialize();
         }
 
-        return new Iterator($this->max, $this->packLength, $this->packFormat, $this->filePointer);
+        return new Iterator($this->max, $this->getPackLength(), $this->getPackFormat(), $this->filePointer);
     }
 
     public function copyToStream($dest)
